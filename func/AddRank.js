@@ -1,7 +1,7 @@
 const { createCanvas, loadImage } = require('canvas');
 const { AttachmentBuilder } = require('discord.js');
 
-module.exports = async(interaction, xp, lvl, reqXp) => {
+module.exports = async(interaction, memberr, xp, lvl, reqXp) => {
   
   const background = 'https://cdn.discordapp.com/attachments/1036262356143046687/1051437842322173982/131279-anime-night-city-lights-city-bed-catzz.png'; //url background
   const defaultColor = '#36ffff';
@@ -19,7 +19,7 @@ module.exports = async(interaction, xp, lvl, reqXp) => {
   const canvas = createCanvas(width, height);
   const ctx = canvas.getContext('2d');
 
-  let user = interaction.user
+  let user = memberr
 
 if (background) {
     const img = await loadImage(background);
@@ -27,22 +27,29 @@ if (background) {
     const imgHeight = img.height * (width / img.width);
 
     ctx.drawImage(img, 0, (canvas.height / 2) - (imgHeight / 2), width, imgHeight);
-} 
+} else {
+    ctx.fillStyle = '#23272a';
+    ctx.fillRect(0, 0, width, height);
+};
 
 const defaultBgColor = '#090a0b';
 
-const bgColor = background;
+const bgColor = background ?
+    'rgba(0, 0, 0, 0.6)' :
+    defaultBgColor;
 
 var avatar;
   
-if(user.displayAvatarURL().endsWith(".webp") ) {
+ctx.fillStyle = bgColor;
+ctx.fillRect(margin, margin, width - (margin * 2), height - (margin * 2));
+
+if(memberr.displayAvatarURL().endsWith(".webp") ) {
   var avatar1 = user.displayAvatarURL()
   
   avatar = await loadImage(avatar1.replace("webp", "jpg")); 
 } else {
-  avatar = await loadImage(user.displayAvatarURL({ format: "jpg", size: 1024 })); 
+  avatar = await loadImage(memberr.displayAvatarURL({ format: "jpg", size: 1024 })); 
 }
-
 ctx.lineWidth = 8;
 
 const avX = (height / 2);
@@ -185,5 +192,5 @@ const statusRadius = 30;
 
 const rank = new AttachmentBuilder(canvas.toBuffer(), {name: 'rank.png'});
 
-return interaction.followUp({ files: [rank] })
+return interaction.followUp({ content: "✅ **|** İşlem başarılı, kullanıcının seviyesi arttırıldı.", files: [rank] })
 }
